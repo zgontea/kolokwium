@@ -3,10 +3,10 @@ package edu.iis.mto.oven;
 public class Oven {
 
     static final int HEAT_UP_AND_FINISH_SETTING_TIME = 0;
-    private final Heating heatingModule;
+    private final HeatingModule heatingModule;
     private final Fan fan;
 
-    public Oven(Heating heatingModule, Fan fan) {
+    public Oven(HeatingModule heatingModule, Fan fan) {
         this.heatingModule = heatingModule;
         this.fan = fan;
     }
@@ -19,10 +19,12 @@ public class Oven {
     }
 
     private void init(int initialTemp) {
-        heatingModule.heater(HeatingSettings.builder()
-                                            .withTargetTemp(initialTemp)
-                                            .withTimeInMinutes(HEAT_UP_AND_FINISH_SETTING_TIME)
-                                            .build());
+        if (initialTemp > 0) {
+            heatingModule.heater(HeatingSettings.builder()
+                                                .withTargetTemp(initialTemp)
+                                                .withTimeInMinutes(HEAT_UP_AND_FINISH_SETTING_TIME)
+                                                .build());
+        }
     }
 
     private void runStage(ProgramStage programStage) {
@@ -32,6 +34,9 @@ public class Oven {
                 heatingModule.termalCircuit(settings(programStage));
                 fan.off();
             } else {
+                if (fan.isOn()) {
+                    fan.off();
+                }
                 runHeatingProgram(programStage);
             }
         } catch (HeatingException ex) {
@@ -39,7 +44,7 @@ public class Oven {
         }
     }
 
-    private void runHeatingProgram(ProgramStage stage) {
+    private void runHeatingProgram(ProgramStage stage) throws HeatingException {
         HeatingSettings settings = settings(stage);
         if (stage.getHeat() == HeatType.GRILL) {
             heatingModule.grill(settings);
