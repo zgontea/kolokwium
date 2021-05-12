@@ -3,10 +3,10 @@ package edu.iis.mto.oven;
 public class Oven {
 
     static final int HEAT_UP_AND_FINISH_SETTING_TIME = 0;
-    private final HeatingModule heatingModule;
+    private final Heating heatingModule;
     private final Fan fan;
 
-    public Oven(HeatingModule heatingModule, Fan fan) {
+    public Oven(Heating heatingModule, Fan fan) {
         this.heatingModule = heatingModule;
         this.fan = fan;
     }
