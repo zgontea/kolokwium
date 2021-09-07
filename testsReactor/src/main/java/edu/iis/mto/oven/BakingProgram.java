@@ -8,10 +8,12 @@ public class BakingProgram implements Iterable<ProgramStage> {
 
     private final int initialTemp;
     private final List<ProgramStage> stages;
+    private final boolean coolAtFinish;
 
     private BakingProgram(Builder builder) {
-        this.initialTemp = builder.initialTemp < 0 ? 0 : builder.initialTemp;
+        this.initialTemp = builder.initialTemp;
         this.stages = builder.stages;
+        this.coolAtFinish = builder.coolAtFinish;
     }
 
     @Override
@@ -24,6 +26,10 @@ public class BakingProgram implements Iterable<ProgramStage> {
         return initialTemp;
     }
 
+    public boolean isCoolAtFinish() {
+        return coolAtFinish;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -32,6 +38,7 @@ public class BakingProgram implements Iterable<ProgramStage> {
 
         private int initialTemp;
         private List<ProgramStage> stages = Collections.emptyList();
+        private boolean coolAtFinish;
 
         private Builder() {}
 
@@ -42,6 +49,11 @@ public class BakingProgram implements Iterable<ProgramStage> {
 
         public Builder withStages(List<ProgramStage> stages) {
             this.stages = stages;
+            return this;
+        }
+
+        public Builder withCoolAtFinish(boolean coolAtFinish) {
+            this.coolAtFinish = coolAtFinish;
             return this;
         }
 

@@ -11,19 +11,30 @@ public class Oven {
         this.fan = fan;
     }
 
-    public void start(BakingProgram program) {
+    public void runProgram(BakingProgram program) {
         init(program.getInitialTemp());
         for (ProgramStage programStage : program) {
             runStage(programStage);
+        }
+        cool(program);
+    }
+
+    private void cool(BakingProgram program) {
+        if (program.isCoolAtFinish()) {
+            fan.on();
         }
     }
 
     private void init(int initialTemp) {
         if (initialTemp > 0) {
-            heatingModule.heater(HeatingSettings.builder()
-                                                .withTargetTemp(initialTemp)
-                                                .withTimeInMinutes(HEAT_UP_AND_FINISH_SETTING_TIME)
-                                                .build());
+            try {
+                heatingModule.heater(HeatingSettings.builder()
+                                                    .withTargetTemp(initialTemp)
+                                                    .withTimeInMinutes(HEAT_UP_AND_FINISH_SETTING_TIME)
+                                                    .build());
+            } catch (HeatingException e) {
+                throw new OvenException(e);
+            }
         }
     }
 
@@ -39,8 +50,8 @@ public class Oven {
                 }
                 runHeatingProgram(programStage);
             }
-        } catch (HeatingException ex) {
-            throw new OvenException(ex);
+        } catch (HeatingException e) {
+            throw new OvenException(e);
         }
     }
 
