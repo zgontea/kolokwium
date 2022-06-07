@@ -2,6 +2,7 @@ package edu.iis.mto.oven;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,34 +97,34 @@ class OvenTest {
         Mockito.verify(fan, Mockito.times(1)).off();
     }
 
-//    @Test
-//    void shouldThrowOvenExceptionWhenHeaterModuleThrowHeatingException() throws HeatingException {
-//        //given
-//        oven = new Oven(heatingModule, fan);
-//        List<ProgramStage> programStages = new ArrayList<>();
-//        programStages.add(ProgramStage.builder()
-//                .withTargetTemp(180)
-//                .withStageTime(20)
-//                .withHeat(HeatType.HEATER)
-//                .build());
-//        BakingProgram bakingProgram = BakingProgram.builder()
-//                .withInitialTemp(80)
-//                .withStages(programStages)
-//                .withCoolAtFinish(true)
-//                .build();
-//        HeatingSettings heatingSettings = HeatingSettings.builder()
-//                .withTargetTemp(20)
-//                .withTimeInMinutes(60)
-//                .build();
-//
-//        Mockito.when(heatingModule.heater(Mockito.any(HeatingSettings.class))).doThrow(HeatingException.class);
-//
-//        //when
-//        oven.runProgram(bakingProgram);
-//
-//        //then
-//        Mockito.verify(fan, Mockito.times(1)).off();
-//    }
+    @Test
+    void shouldThrowOvenExceptionWhenHeaterModuleThrowHeatingException() throws HeatingException {
+        //given
+        oven = new Oven(heatingModule, fan);
+        List<ProgramStage> programStages = new ArrayList<>();
+        programStages.add(ProgramStage.builder()
+                .withTargetTemp(180)
+                .withStageTime(20)
+                .withHeat(HeatType.HEATER)
+                .build());
+        BakingProgram bakingProgram = BakingProgram.builder()
+                .withInitialTemp(80)
+                .withStages(programStages)
+                .withCoolAtFinish(true)
+                .build();
+        HeatingSettings heatingSettings = HeatingSettings.builder()
+                .withTargetTemp(80)
+                .withTimeInMinutes(0)
+                .build();
+
+        Mockito.doThrow(HeatingException.class).when(heatingModule).heater(heatingSettings);
+
+        //when
+        //then
+        assertThrows(OvenException.class, () -> {
+            oven.runProgram(bakingProgram);
+        });
+    }
 
     @Test
     void shouldRunHeatingProgramGrill() throws HeatingException {
@@ -140,8 +142,8 @@ class OvenTest {
                 .withCoolAtFinish(true)
                 .build();
         HeatingSettings heatingSettings = HeatingSettings.builder()
-                .withTargetTemp(20)
-                .withTimeInMinutes(60)
+                .withTargetTemp(180)
+                .withTimeInMinutes(20)
                 .build();
 
         //when
